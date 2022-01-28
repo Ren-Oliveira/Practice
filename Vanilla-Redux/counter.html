@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Practice Redux</title>
+  </head>
+
+  <body>
+
+        <button id="decrementBy5">Decrement 5</button>
+
+        <button id="decrementBy1">Decrement 1</button>
+
+        <button id="incrementBy1">Increment 1</button>
+        
+        <button id="incrementBy5">Increment 5</button>
+      </div>
+
+      <div id="display" style="margin: 10px 170px; font-size: 30px;">0</div>
+
+    <script src="https://unpkg.com/redux@latest/dist/redux.min.js"></script>
+
+    <script>
+      const INCREMENT = "INCREMENT";
+      const DECREMENT = "DECREMENT";
+
+      const counterReducer = (state = 0, action) => {
+        switch (action.type) {
+          case INCREMENT:
+            return state + action.amount;
+          case DECREMENT:
+            return state - action.amount;
+          default:
+            return state;
+        }
+      };
+
+      const store = Redux.createStore(counterReducer);
+
+      const render = () => {
+        const display = document.getElementById("display");
+        const state = store.getState();
+        display.textContent = state;
+      };
+
+      const dispatchIncrement = (amount) =>
+        store.dispatch({ type: INCREMENT, amount });
+
+      const dispatchDecrement = (amount) =>
+        store.dispatch({ type: DECREMENT, amount });
+
+      document.getElementById("incrementBy5").onclick = () => {
+        dispatchIncrement(5);
+        render();
+      };
+
+      document.getElementById("incrementBy1").onclick = () => {
+        dispatchIncrement(1);
+        render();
+      };
+
+      document.getElementById("decrementBy1").onclick = () => {
+        dispatchDecrement(1);
+        render();
+      };
+
+      document.getElementById("decrementBy5").onclick = () => {
+        dispatchDecrement(5);
+        render();
+      };
+    </script>
+  </body>
+</html>
