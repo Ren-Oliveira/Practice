@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Practice Redux</title>
+  </head>
+
+  <!-- Simple task manager with a button to add new and a method to delete by click -->
+
+  <!-- Redux on vanilla JS -->
+
+  <body>
+    <input type="text" id="todo" />
+    <button id="submit-todo">submit</button>
+    <div id="container" />
+
+    <script src="https://unpkg.com/redux@latest/dist/redux.min.js"></script>
+
+    <script>
+      const ADD = "ADD";
+      const DELETE = "DELETE";
+
+      const reducer = Redux.combineReducers({
+        // state initialized as an empty array;
+        todos: (state = [], action) => {
+          const newState = Object.assign([], state);
+
+          //   if (action.type === ADD) newState.push(action.item);
+          //   if (action.type === DELETE) newState.splice(action.index, 1);
+          //   return newState;
+
+          switch (action.type) {
+            case ADD:
+              newState.push(action.item);
+              return newState;
+            case DELETE:
+              newState.splice(action.index, 1);
+              return newState;
+            default:
+              return newState;
+          }
+        },
+      });
+
+      const store = Redux.createStore(reducer);
+
+      const dispatchAdd = (todo) => store.dispatch({ type: ADD, item: todo });
+      const dispatchDelete = (i) => store.dispatch({ type: DELETE, index: i });
+
+      const render = () => {
+        const container = document.getElementById("container");
+        const state = store.getState();
+
+        container.innerHTML = "";
+        state.todos.forEach((todo, i) => {
+          const e = document.createElement("div");
+          e.innerHTML = todo;
+          container.appendChild(e);
+
+          e.onclick = () => {
+            // store.dispatch({ type: DELETE, index: i });
+            dispatchDelete(i);
+            render();
+          };
+        });
+      };
+
+      document.getElementById("submit-todo").onclick = () => {
+        // store.dispatch({
+        //   type: ADD,
+        //   item: document.getElementById("todo").value,
+        // });
+        dispatchAdd(document.getElementById("todo").value);
+        render();
+      };
+    </script>
+  </body>
+</html>
+
+<!-- The purpose of Redux is to have a store that manages everything. -->
