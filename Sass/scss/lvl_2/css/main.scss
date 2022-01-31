@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
 
-@import "config", "home", "menu";
+@import "config", "home", "menu", "about";
 
 body {
   background: $primary-color;
@@ -19,6 +19,10 @@ h3 {
 a {
   color: setTextColor($primary-color);
   text-decoration: none;
+}
+
+.text-secondary {
+  color: $secondary-color;
 }
 
 header {
