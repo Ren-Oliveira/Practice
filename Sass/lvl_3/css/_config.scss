@@ -1,0 +1,17 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+
+$primary-color: #9388a2;
+$secondary-color: #341948;
+$tertiary-color: #170b3b;
+$background-color: #0e050f;
+$font: "roboto";
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+@mixin transition-ease {
+  transition: all 0.4s ease-in-out;
+}
