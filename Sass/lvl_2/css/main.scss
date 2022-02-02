@@ -1,6 +1,12 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+@use "config" as *;
+@use "home" as *;
+@use "menu" as *;
+@use "about" as *;
+@use "projects" as *;
+@use "contacts" as *;
+@use "responsive" as *;
 
-@import "config", "home", "menu", "about", "projects", "contacts", "responsive";
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
 
 body {
   background: $primary-color;

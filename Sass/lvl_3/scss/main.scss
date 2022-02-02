@@ -1,4 +1,6 @@
-@import "config", "home";
+@use "config" as *;
+@use "home" as *;
+@forward "nav";
 
 body {
   background: $background-color;

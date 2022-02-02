@@ -1,0 +1,34 @@
+@use "config" as *;
+
+.nav-container {
+  position: fixed;
+  background: $secondary-color;
+  top: 0;
+  left: 0;
+  width: 100%;
+
+  .nav {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    justify-content: right;
+    overflow: hidden;
+    gap: 2rem;
+    list-style-type: none;
+    padding: 0.75rem 2rem;
+
+    &__item {
+      a {
+        font-size: 1.25rem;
+      }
+
+      &:hover {
+        font-weight: 700;
+      }
+    }
+
+    .active {
+      font-weight: 800;
+    }
+  }
+}
