@@ -35,7 +35,7 @@ $system-background-color: linear-gradient(
     border-top: 6px double $system-accent-color;
     border-bottom: 6px double $system-accent-color;
     padding: 1rem;
-    font-size: 3.5rem;
+    font-size: auto;
     font-weight: 900;
     letter-spacing: 2px;
 
@@ -50,6 +50,30 @@ $system-background-color: linear-gradient(
     font-weight: 500;
     padding: 1rem;
     line-height: 150%;
+  }
+
+  &__skills {
+    border-bottom: 4px double $system-accent-color;
+    padding: 2rem;
+    text-align: left;
+    width: auto;
+  }
+  &__skill {
+    margin-top: 0.5rem;
+    display: grid;
+    grid-template-columns: repeat(4, 10ch auto);
+    list-style-type: none;
+    font-size: 1rem;
+    text-align: justify;
+    line-height: 150%;
+
+    &-name {
+      font-weight: 700;
+    }
+
+    &-score {
+      font-weight: 500;
+    }
   }
 }
 

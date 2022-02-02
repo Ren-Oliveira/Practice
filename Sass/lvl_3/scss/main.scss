@@ -1,5 +1,6 @@
 @use "config" as *;
 @use "home" as *;
+@use "profile" as *;
 @forward "nav";
 
 body {
