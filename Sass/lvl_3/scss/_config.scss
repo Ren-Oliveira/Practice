@@ -2,9 +2,56 @@
 
 $primary-color: #9388a2;
 $secondary-color: #341948;
-$tertiary-color: #170b3b;
-$background-color: #0e050f;
+$background-color: #04050a;
 $font: "roboto";
+
+$system-accent-color: #48a0d8;
+$system-text-color: #fff;
+$system-background-color: linear-gradient(
+  90deg,
+  #051642 10%,
+  #133081 50%,
+  #051642 90%
+);
+
+@mixin system() {
+  width: 50vw;
+  color: white;
+  background: $system-background-color;
+  padding: 0.5rem 1.5rem;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px #000, 2px -2px 4px #000, -2px 2px 4px #000,
+    -2px -2px 4px #000;
+  border: 6px double $system-accent-color;
+  box-shadow: 3px 3px 9px #ffffff25, -3px -3px 9px #ffffff25;
+  border-radius: 10px;
+
+  &__title {
+    color: $system-text-color;
+    width: 100%;
+    margin: 2rem 0 0 0;
+    border-top: 6px double $system-accent-color;
+    border-bottom: 6px double $system-accent-color;
+    padding: 1rem;
+    font-size: 3.5rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+
+    background: linear-gradient(to left, #051642 2%, #00000000, #051642 98%),
+      linear-gradient(to top, #ffffff50, #00000000, #ffffff50);
+  }
+
+  &__text {
+    color: $system-text-color;
+    font-size: 1rem;
+    text-align: justify;
+    font-weight: 500;
+    padding: 1rem;
+    line-height: 150%;
+  }
+}
 
 * {
   box-sizing: border-box;

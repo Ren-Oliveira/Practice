@@ -2,10 +2,12 @@
 
 .nav-container {
   position: fixed;
-  background: $secondary-color;
+  background: $system-background-color;
+  border-bottom: 5px double $system-accent-color;
   top: 0;
   left: 0;
   width: 100%;
+  box-shadow: 3px 3px 9px #ffffff25, -3px -3px 9px #ffffff25;
 
   .nav {
     display: flex;
@@ -20,10 +22,15 @@
     &__item {
       a {
         font-size: 1.25rem;
+        color: $system-text-color;
+        font-weight: 500;
+        text-shadow: 2px 2px 4px #000, 2px -2px 4px #000, -2px 2px 4px #000,
+          -2px -2px 4px #000;
       }
 
       &:hover {
         font-weight: 700;
+        transform: scale(1.1);
       }
     }
 

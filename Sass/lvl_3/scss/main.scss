@@ -25,6 +25,13 @@ header {
 main {
   height: 100%;
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .system {
+    @include system();
+  }
 
   .social-icons {
     position: fixed;
@@ -32,13 +39,16 @@ main {
     left: 1rem;
 
     a {
-      padding: 0.4rem;
+      padding: 0.5rem;
+      font-weight: 400;
       color: $primary-color;
+      font-size: 1.25rem;
       @include transition-ease;
 
       &:hover {
-        color: $secondary-color;
-        transform: scale(1.4);
+        color: $system-accent-color;
+        transform: scale(1.2);
+        @include transition-ease;
       }
     }
   }
