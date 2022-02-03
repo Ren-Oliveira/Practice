@@ -1,6 +1,4 @@
-///// NOT WORKING!
-
-const defaultState = { result: "0", currValue: "", operator: "" };
+const defaultState = { result: "", prevValue: "", currValue: "", operator: "" };
 
 const solve = (a, b, op) => {
   switch (op) {
@@ -36,7 +34,7 @@ class MyComponent extends React.Component {
   inputDecimalHandler() {
     if (this.state.currValue.includes(".")) return;
     if (this.state.currValue == "")
-      return this.setState({ ...this.state, currValue: "0.", result: `0` });
+      return this.setState({ ...this.state, currValue: "0." });
     return this.setState({
       ...this.state,
       currValue: this.state.currValue + ".",
@@ -47,46 +45,63 @@ class MyComponent extends React.Component {
   inputNumberHandler(num, state = this.state) {
     if (state.currValue == "0" || state.currValue == "") {
       if (num == "0") return;
-      return this.setState({ ...state, currValue: num, result: `${num}` });
+      return this.setState({ ...state, currValue: num });
     }
-    this.setState({
-      ...state,
-      currValue: `${state.currValue}${num}`,
-      result: `${state.currValue}${num}`,
-    });
+    this.setState({ ...state, currValue: `${state.currValue}${num}` });
   }
 
   ///// ADD OPERATOR + - / *
   inputOperationHandler(op) {
-    let cur = this.state.currValue;
+    if (this.state.currValue == "" && this.state.prevValue == "") return;
+
+    if (this.state.operator == "" && this.state.prevValue == "")
+      return this.setState({
+        ...this.state,
+        prevValue: this.state.currValue,
+        currValue: "",
+        operator: op,
+      });
+
+    if (this.state.operator == "" && this.state.prevValue != "")
+      return this.setState({ ...this.state, currValue: "", operator: op });
+
     if (this.state.operator != "") {
-      let updatedResult = solve(+this.state.result, +cur, this.state.operator);
-      this.setState({ ...this.state, result: updatedResult, currValue: "" });
+      let updatedResult = solve(
+        +this.state.prevValue,
+        +this.state.currValue,
+        this.state.operator
+      );
+      this.setState({
+        ...this.state,
+        prevValue: updatedResult,
+        currValue: "",
+        operator: op,
+      });
     }
-    if (this.state.operator == "")
-      return this.setState({ currValue: "", result: cur, operator: op });
   }
 
   ///// RESOLVE
   outputResultHandler() {
-    console.log(this.state);
+    if (this.state.prevValue == "" || this.state.currValue == "") return;
+    let updatedResult = solve(
+      +this.state.prevValue,
+      +this.state.currValue,
+      this.state.operator
+    );
+    this.setState({
+      result: updatedResult + "",
+      prevValue: updatedResult + "",
+      currValue: "",
+      operator: "",
+    });
   }
 
   render() {
     return (
       <div id="calculator">
         <div id="display">
-          <div id="display-curr">
-            {this.state.currValue != "" ||
-              (this.state.currValue != this.state.result && this.state.result)}
-            {this.state.operator}
-            {this.state.currValue}
-          </div>
-
-          <div id="display-total">
-            {this.state.currValue != "" && "="}
-            {this.state.result}
-          </div>
+          {this.state.currValue}
+          {this.state.result ? this.state.result : "0"}
         </div>
 
         <div id="calculator__btns">
