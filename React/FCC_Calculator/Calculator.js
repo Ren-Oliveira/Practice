@@ -1,4 +1,9 @@
-const defaultState = { result: "", prevValue: "", currValue: "", operator: "" };
+const defaultState = {
+  prevValue: null,
+  currValue: "0",
+  operator: null,
+  result: "",
+};
 
 const solve = (a, b, op) => {
   switch (op) {
@@ -43,41 +48,41 @@ class MyComponent extends React.Component {
 
   ///// ADD NUMBER
   inputNumberHandler(num, state = this.state) {
-    if (state.currValue == "" && num == "0") return;
+    if (state.currValue == "0" && num == "0") return;
     this.setState({ ...state, currValue: `${state.currValue || ""}${num}` });
   }
 
   ///// ADD OPERATOR + - / *
   inputOperationHandler(op) {
-    if (this.state.currValue == "" && this.state.prevValue == "") return;
-
-    if (this.state.prevValue == "")
+    if (!this.state.operator && !this.state.prevValue)
       return this.setState({
         ...this.state,
+        operator: op,
         prevValue: this.state.currValue,
         currValue: "",
-        operator: op,
       });
 
-    if (this.state.operator == "" && this.state.prevValue != "")
-      return this.setState({ ...this.state, currValue: "", operator: op });
-
-    if (this.state.operator != "") {
-      let updatedResult = solve(
-        +this.state.prevValue,
-        +this.state.currValue,
-        this.state.operator
-      );
-      this.setState({
-        ...this.state,
-        prevValue: updatedResult,
-        currValue: "",
-        operator: op,
-      });
+    if (this.state.operator) {
+      if (this.state.prevValue) {
+        let updatedResult = solve(
+          +this.state.prevValue,
+          +this.state.currValue,
+          this.state.operator
+        );
+        return this.setState({
+          ...this.state,
+          operator: op,
+          prevValue: updatedResult,
+          currValue: "",
+        });
+      } else if (!this.state.currValue) {
+        if (op != "-") return this.setState({ ...this.state, operator: op });
+        if (op == "-") return this.setState({ ...this.state, currValue: "-" });
+      }
     }
   }
 
-  ///// RESOLVE
+  ///// Result
   outputResultHandler() {
     if (this.state.prevValue == "" || this.state.currValue == "") return;
     let updatedResult = solve(
@@ -97,11 +102,11 @@ class MyComponent extends React.Component {
     return (
       <div id="calculator">
         <div id="display">
-          <div id="display_input">
-            {this.state.prevValue} {this.state.operator} {this.state.currValue}
-          </div>
           <div id="display_output">
-            {this.state.result != "" ? this.state.result : "0"}{" "}
+            {this.state.result && this.state.result}
+          </div>
+          <div id="display_input">
+            {this.state.currValue} {this.state.operator && this.state.operator}
           </div>
         </div>
 
@@ -110,7 +115,7 @@ class MyComponent extends React.Component {
             clear
           </button>
           <button id="divide" onClick={() => this.inputOperationHandler("/")}>
-            /
+            ÷
           </button>
           <button id="one" onClick={() => this.inputNumberHandler("1")}>
             1
@@ -122,7 +127,7 @@ class MyComponent extends React.Component {
             3
           </button>
           <button id="multiply" onClick={() => this.inputOperationHandler("x")}>
-            x
+            ×
           </button>
           <button id="four" onClick={() => this.inputNumberHandler("4")}>
             4
