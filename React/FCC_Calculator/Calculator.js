@@ -41,20 +41,17 @@ class MyComponent extends React.Component {
     });
   }
 
-  ///// ADD DIGIT
+  ///// ADD NUMBER
   inputNumberHandler(num, state = this.state) {
-    if (state.currValue == "0" || state.currValue == "") {
-      if (num == "0") return;
-      return this.setState({ ...state, currValue: num });
-    }
-    this.setState({ ...state, currValue: `${state.currValue}${num}` });
+    if (state.currValue == "" && num == "0") return;
+    this.setState({ ...state, currValue: `${state.currValue || ""}${num}` });
   }
 
   ///// ADD OPERATOR + - / *
   inputOperationHandler(op) {
     if (this.state.currValue == "" && this.state.prevValue == "") return;
 
-    if (this.state.operator == "" && this.state.prevValue == "")
+    if (this.state.prevValue == "")
       return this.setState({
         ...this.state,
         prevValue: this.state.currValue,
@@ -100,8 +97,12 @@ class MyComponent extends React.Component {
     return (
       <div id="calculator">
         <div id="display">
-          {this.state.currValue}
-          {this.state.result ? this.state.result : "0"}
+          <div id="display_input">
+            {this.state.prevValue} {this.state.operator} {this.state.currValue}
+          </div>
+          <div id="display_output">
+            {this.state.result != "" ? this.state.result : "0"}{" "}
+          </div>
         </div>
 
         <div id="calculator__btns">
