@@ -54,17 +54,17 @@ class MyComponent extends React.Component {
 
   ///// ADD OPERATOR + - / *
   inputOperationHandler(op) {
-    if (this.state.currValue === "0" || this.state.currValue === "") {
-      if (op === "-") return this.setState({ ...this.state, currValue: "-" });
-      return;
+    //     if it has a prevvalue, - can be both operator and curr
+
+    if (this.state.currValue === "-") {
+      if (op == "-") return;
+      return this.setState({ ...this.state, currValue: "" });
     }
 
-    if (!this.state.operator && !this.state.prevValue)
-      return this.setState({
-        prevValue: this.state.currValue,
-        currValue: "",
-        operator: op,
-      });
+    if (this.state.currValue === "0" || this.state.currValue === "") {
+      if (op === "-") return this.setState({ ...this.state, currValue: "-" });
+      if (!this.state.prevValue) return;
+    }
 
     if (this.state.operator) {
       if (this.state.currValue === "")
@@ -81,6 +81,17 @@ class MyComponent extends React.Component {
         currValue: "",
       });
     }
+
+    if (!this.state.operator) {
+      if (!this.state.prevValue)
+        return this.setState({
+          prevValue: this.state.currValue,
+          currValue: "",
+          operator: op,
+        });
+
+      return this.setState({ ...this.state, operator: op });
+    }
   }
 
   ///// Result
@@ -94,7 +105,7 @@ class MyComponent extends React.Component {
 
     this.setState({
       prevValue: updatedResult + "",
-      currValue: updatedResult + "",
+      currValue: "",
       operator: null,
     });
   }
