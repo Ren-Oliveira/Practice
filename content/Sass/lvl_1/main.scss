@@ -1,0 +1,86 @@
+@import "./resets";
+@import "./variables";
+
+// functions should be used to compute and return values
+@function weight($weight-name) {
+  @return map-get($font-weights, $weight-name);
+}
+
+// mixins should be used to define styles
+@mixin flexCenter($direction) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: $direction;
+}
+
+@mixin theme($light-theme: true) {
+  @if $light-theme {
+    background: lighten($primary-color, 100%);
+    color: darken($text-color, 100%);
+  }
+}
+
+@mixin mobile {
+  @media (max-width: $mobile) {
+    @content;
+  }
+}
+
+body {
+  background: $background-color;
+  color: $text-color;
+  font-family: sans-serif;
+}
+
+.main {
+  @include flexCenter(row);
+  width: 80%;
+  margin: 0 auto;
+  padding: 2rem;
+
+  h1 {
+    font-size: 1rem + 1rem; // sass
+    // font-size: calc(1rem + 1rem); // normal css
+    // with calc() we can mix values (e.g. 1rem - 2px).
+    // with sass we can't mix values.
+  }
+
+  #{&}_paragraph1 {
+    margin: 0 1rem;
+    font-weight: weight(medium);
+    font-size: 1rem;
+
+    &:hover {
+      color: $secondary-color;
+    }
+  }
+
+  #{&}_paragraph2 {
+    @extend .main_paragraph1;
+
+    &:hover {
+      color: $primary-color;
+    }
+  }
+
+  @include mobile {
+    flex-direction: column;
+  }
+}
+
+.light {
+  @include theme($light-theme: true);
+}
+
+#btn--changeTheme {
+  @include flexCenter(row);
+  background: $primary-color;
+  font-size: 1rem;
+  padding: 1rem;
+  margin: 1rem;
+
+  &:hover {
+    background: $secondary-color;
+  }
+}
