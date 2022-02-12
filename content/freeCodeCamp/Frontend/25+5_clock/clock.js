@@ -5,6 +5,7 @@ const defaultState = {
   sessionValue: 25,
   breakValue: 5,
   seconds: "00",
+  start: false,
 };
 
 const clockReducer = (state, action) => {
@@ -12,11 +13,15 @@ const clockReducer = (state, action) => {
     case "INCREMENT_SESSION":
       return { ...state, sessionValue: state.sessionValue + 1 };
     case "DECREMENT_SESSION":
+      if (state.sessionValue === 0) return state;
       return { ...state, sessionValue: state.sessionValue - 1 };
     case "INCREMENT_BREAK":
       return { ...state, breakValue: state.breakValue + 1 };
     case "DECREMENT_BREAK":
+      if (state.breakValue === 0) return state;
       return { ...state, breakValue: state.breakValue - 1 };
+    case "START_STOP":
+      return { ...state, start: !state.start };
     case "RESET":
       return defaultState;
     default:
@@ -28,8 +33,6 @@ const Clock = () => {
   const [state, dispatch] = useReducer(clockReducer, defaultState);
 
   const [started, setStarted] = useState(false);
-  // const [sessionValue, setSessionValue] = useState("25:00");
-  // const [breakValue, setBreakValue] = useState(5);
 
   const resetHandler = () => {
     dispatch({ type: "RESET" });
