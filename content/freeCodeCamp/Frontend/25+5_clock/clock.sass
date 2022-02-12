@@ -1,0 +1,69 @@
+body
+  margin: 0
+  padding: 0
+  height: 100vh
+  width: 100vw
+  display: flex
+  justify-content: center
+  align-items: center
+  box-sizing: content-box
+  background: linear-gradient(to top right, #222, #535)
+  color: white
+  
+  .container
+    display: grid
+    grid-template-areas: "timer timer" ". ." "btns btns"
+    text-align: center
+    gap: 2rem
+    font-family: Helvetica
+    
+    #timer
+      grid-area: timer
+      &-label
+        font-size: 1.5rem
+      #time-left
+        font-size: 5rem
+      
+    .box
+      display: grid
+      grid-template-columns: repeat(3, 1fr)
+      grid-template-rows: 1fr 1fr
+      text-align: center
+      
+      .label
+        grid-column-start: span 3
+        padding: 1rem
+        font-size: 1.25rem
+        text-align: center
+        
+      .btn
+        grid-column-start: span 1
+        padding: 0.5rem
+        font-size: 2rem
+        color: white
+        background: transparent
+        border: none
+        cursor: pointer
+        border-radius: 50% / 20%
+        &:hover
+          background: #00000030
+        
+      .value
+        align-self: center
+        font-size: 2rem
+      
+    .btns
+      grid-area: btns
+      button
+        grid-area: btns
+        padding: 0.5rem
+        color: white
+        background: transparent
+        border: none
+        cursor: pointer
+        font-size: 1.5rem
+        &:hover
+          color: lightgreen
+    
+      
+
