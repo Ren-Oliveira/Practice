@@ -2,45 +2,62 @@ import ReactDOM from "https://cdn.skypack.dev/react-dom";
 import { useEffect, useReducer } from "https://cdn.skypack.dev/react";
 
 const defaultState = {
-  sessionValue: 25,
-  breakValue: 5,
-  sessionSeconds: 60,
-  breakSeconds: 60,
-  start: false,
-  break: false,
+  sessionOn: false,
+  sessionDefault: 25,
+  sessionTimer: { min: 25, sec: 0 },
+  breakOn: false,
+  breakDefault: 5,
+  breakTimer: { min: 0, sec: 0 },
+};
+
+const timerStr = ({ min, sec }) => {
+  let m = min;
+  let s = sec;
+  if (min < 10) m = `0${min}`;
+  if (sec < 10) s = `0${sec}`;
+  if (sec === 60) {
+    s = `00`;
+    m = min + 1;
+  }
+  return `${m}:${s}`;
 };
 
 const clockReducer = (state, action) => {
   switch (action.type) {
-    case "INCREMENT_SESSION":
-      return { ...state, sessionValue: state.sessionValue + 1 };
-    case "DECREMENT_SESSION":
-      if (state.sessionValue === 0) return state;
-      return { ...state, sessionValue: state.sessionValue - 1 };
-    case "INCREMENT_BREAK":
-      return { ...state, breakValue: state.breakValue + 1 };
-    case "DECREMENT_BREAK":
-      if (state.breakValue === 0) return state;
-      return { ...state, breakValue: state.breakValue - 1 };
-    case "START_STOP":
-      return { ...state, start: !state.start };
-
     case "RESET":
       return defaultState;
+    case "INCREMENT_SESSION":
+      if (state.sessionDefault === 60) return state;
+      return { ...state, sessionDefault: state.sessionDefault + 1 };
+    case "DECREMENT_SESSION":
+      if (state.sessionDefault === 0) return state;
+      return { ...state, sessionDefault: state.sessionDefault - 1 };
+    case "INCREMENT_BREAK":
+      if (state.breakDefault === 60) return state;
+      return { ...state, breakDefault: state.breakDefault + 1 };
+    case "DECREMENT_BREAK":
+      if (state.breakDefault === 0) return state;
+      return { ...state, breakDefault: state.breakDefault - 1 };
+    case "INIT_BREAK":
+      return {
+        ...state,
+        breakOn: true,
+        sessionOn: false,
+        breakTimer: { min: state.breakDefault, sec: 0 },
+      };
+    case "INIT_SESSION":
+      return {
+        ...state,
+        breakOn: false,
+        sessionOn: true,
+        sessionTimer: { min: state.sessionDefault, sec: 0 },
+      };
+    case "RUN_SESSION":
+      let s = state.sessionTimer.sec;
+      let m = state.sessionTimer.min;
 
-    case "SESSION_ON":
-      if (state.sessionSeconds === 0 && state.sessionValue === 0)
-        return { ...state, break: true, session: false };
-      if (state.sessionSeconds === 0)
-        return {
-          ...state,
-          sessionSeconds: 60,
-          sessionValue: state.sessionValue - 1,
-        };
-
-      return { ...state, sessionSeconds: state.sessionSeconds - 1 };
-
-    case "ON_BREAK":
+      if (s > 0) return { ...state, sessionTimer: { min: m, sec: s - 1 } };
+      if (s === 0) return { ...state, sessionTimer: { min: m - 1, sec: 60 } };
 
     default:
       throw new Error("Something went wrong");
@@ -50,32 +67,29 @@ const clockReducer = (state, action) => {
 const Clock = () => {
   const [state, dispatch] = useReducer(clockReducer, defaultState);
 
-  //   useEffect(()=>{
-  //     if(state.start === true){
-  //       setInterval(()=>{
-  //         dispatch({type: "SESSION_ON"})
-  //       }, 1000)
-  //     }
-  //   }, [state.start])
+  useEffect(() => {
+    if (state.sessionOn === true) {
+      let interval = setInterval(() => {
+        dispatch({ type: "RUN_SESSION" });
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [state.sessionOn]);
 
   const resetHandler = () => dispatch({ type: "RESET" });
   const incrementSessionHandler = () => dispatch({ type: "INCREMENT_SESSION" });
   const decrementSessionHandler = () => dispatch({ type: "DECREMENT_SESSION" });
   const incrementBreakHandler = () => dispatch({ type: "INCREMENT_BREAK" });
   const decrementBreakHandler = () => dispatch({ type: "DECREMENT_BREAK" });
-  const toggleStartStopHandler = () => dispatch({ type: "START_STOP" });
+  const toggleStartStopHandler = () => dispatch({ type: "INIT_SESSION" });
 
-  const timeLeft = `${
-    state.sessionSeconds === 60
-      ? state.sessionValue + ":00"
-      : state.sessionValue + ":" + state.sessionSeconds
-  }`;
+  const timeLeft = timerStr(state.sessionTimer);
 
   return (
     <div className="container">
       <div id="timer">
         <div id="timer-label"> Session / Break </div>
-        <div id="time-left"> {timeLeft} </div>
+        <div id="time-left">{timeLeft}</div>
       </div>
 
       <div id="session" className="box">
@@ -93,7 +107,7 @@ const Clock = () => {
         </button>
         <span id="session-length" className="value">
           {" "}
-          {state.sessionValue}{" "}
+          {state.sessionDefault}{" "}
         </span>
         <button
           id="session-increment"
@@ -120,7 +134,7 @@ const Clock = () => {
         </button>
         <span id="break-length" className="value">
           {" "}
-          {state.breakValue}{" "}
+          {state.breakDefault}{" "}
         </span>
         <button
           id="break-increment"
