@@ -9,6 +9,7 @@ const defaultState = {
   breakDefault: 5,
   breakTimer: { min: 0, sec: 0 },
   timeLeft: "25:00",
+  paused: "",
 };
 
 const timerStr = ({ min, sec }) => {
@@ -99,8 +100,19 @@ const clockReducer = (state, action) => {
           timeLeft: timerStr(state.sessionTimer),
         };
       if (mB === 0 && sB === 0) return dispatch({ type: "INIT_SESSION" });
+
     case "START_STOP":
-      return { ...state, sessionOn: !state.sessionOn };
+      if (!state.sessionOn && !state.breakOn)
+        return { ...state, sessionOn: true };
+      if (state.paused === "" && state.sessionOn)
+        return { ...state, sessionOn: false, paused: "session" };
+      if (state.paused === "session")
+        return { ...state, sessionOn: true, paused: "" };
+      if (state.paused === "" && state.breakOn)
+        return { ...state, breakOn: false, paused: "break" };
+      if (state.paused === "break")
+        return { ...state, breakOn: true, paused: "" };
+
     default:
       throw new Error("Something went wrong");
   }
