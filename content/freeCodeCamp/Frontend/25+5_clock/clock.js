@@ -8,6 +8,7 @@ const defaultState = {
   breakOn: false,
   breakDefault: 5,
   breakTimer: { min: 0, sec: 0 },
+  timeLeft: "25:00",
 };
 
 const timerStr = ({ min, sec }) => {
@@ -15,10 +16,6 @@ const timerStr = ({ min, sec }) => {
   let s = sec;
   if (min < 10) m = `0${min}`;
   if (sec < 10) s = `0${sec}`;
-  if (sec === 60) {
-    s = `00`;
-    m = min + 1;
-  }
   return `${m}:${s}`;
 };
 
@@ -27,38 +24,83 @@ const clockReducer = (state, action) => {
     case "RESET":
       return defaultState;
     case "INCREMENT_SESSION":
-      if (state.sessionDefault === 60) return state;
-      return { ...state, sessionDefault: state.sessionDefault + 1 };
+      if (state.sessionDefault === 60 || state.sessionOn || state.breakOn)
+        return state;
+      return {
+        ...state,
+        sessionDefault: state.sessionDefault + 1,
+        sessionTimer: { min: state.sessionDefault + 1, sec: 0 },
+      };
     case "DECREMENT_SESSION":
-      if (state.sessionDefault === 0) return state;
-      return { ...state, sessionDefault: state.sessionDefault - 1 };
+      if (state.sessionDefault === 0 || state.sessionOn || state.breakOn)
+        return state;
+      return {
+        ...state,
+        sessionDefault: state.sessionDefault - 1,
+        sessionTimer: { min: state.sessionDefault - 1, sec: 0 },
+      };
     case "INCREMENT_BREAK":
-      if (state.breakDefault === 60) return state;
-      return { ...state, breakDefault: state.breakDefault + 1 };
+      if (state.breakDefault === 60 || state.sessionOn || state.breakOn)
+        return state;
+      return {
+        ...state,
+        breakDefault: state.breakDefault + 1,
+        breakTimer: { min: state.breakDefault + 1, sec: 0 },
+      };
     case "DECREMENT_BREAK":
-      if (state.breakDefault === 0) return state;
-      return { ...state, breakDefault: state.breakDefault - 1 };
+      if (state.breakDefault === 0 || state.sessionOn || state.breakOn)
+        return state;
+      return {
+        ...state,
+        breakDefault: state.breakDefault - 1,
+        breakTimer: { min: state.breakDefault - 1, sec: 0 },
+      };
     case "INIT_BREAK":
-      return {
-        ...state,
-        breakOn: true,
-        sessionOn: false,
-        breakTimer: { min: state.breakDefault, sec: 0 },
-      };
+      return dispatch(
+        { ...state, breakOn: true, sessionOn: false },
+        { type: "RUN_BREAK" }
+      );
     case "INIT_SESSION":
-      return {
-        ...state,
-        breakOn: false,
-        sessionOn: true,
-        sessionTimer: { min: state.sessionDefault, sec: 0 },
-      };
+      return dispatch(
+        { ...state, breakOn: false, sessionOn: true },
+        { type: "RUN_BREAK" }
+      );
+
     case "RUN_SESSION":
-      let s = state.sessionTimer.sec;
-      let m = state.sessionTimer.min;
+      let sS = state.sessionTimer.sec;
+      let mS = state.sessionTimer.min;
+      if (sS > 0)
+        return {
+          ...state,
+          sessionTimer: { min: mS, sec: sS - 1 },
+          timeLeft: timerStr(state.sessionTimer),
+        };
+      if (sS === 0 && mS > 0)
+        return {
+          ...state,
+          sessionTimer: { min: mS - 1, sec: 59 },
+          timeLeft: timerStr(state.sessionTimer),
+        };
+      if (sS === 0 && mS === 0) dispatch({ type: "INIT_BREAK" });
 
-      if (s > 0) return { ...state, sessionTimer: { min: m, sec: s - 1 } };
-      if (s === 0) return { ...state, sessionTimer: { min: m - 1, sec: 60 } };
-
+    case "RUN_BREAK":
+      let sB = state.breakTimer.sec;
+      let mB = state.breakTimer.min;
+      if (sB > 0)
+        return {
+          ...state,
+          breakTimer: { min: mB, sec: sB - 1 },
+          timeLeft: timerStr(state.sessionTimer),
+        };
+      if (sB === 0)
+        return {
+          ...state,
+          breakTimer: { min: mB - 1, sec: 59 },
+          timeLeft: timerStr(state.sessionTimer),
+        };
+      if (mB === 0 && sB === 0) return dispatch({ type: "INIT_SESSION" });
+    case "START_STOP":
+      return { ...state, sessionOn: !state.sessionOn };
     default:
       throw new Error("Something went wrong");
   }
@@ -68,28 +110,29 @@ const Clock = () => {
   const [state, dispatch] = useReducer(clockReducer, defaultState);
 
   useEffect(() => {
-    if (state.sessionOn === true) {
-      let interval = setInterval(() => {
-        dispatch({ type: "RUN_SESSION" });
-      }, 1000);
-      return () => clearInterval(interval);
-    }
-  }, [state.sessionOn]);
+    let interval;
+
+    interval = setInterval(() => {
+      if (state.breakOn) dispatch({ type: "RUN_BREAK" });
+
+      if (state.sessionOn) dispatch({ type: "RUN_SESSION" });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [state.sessionOn, state.breakOn]);
 
   const resetHandler = () => dispatch({ type: "RESET" });
   const incrementSessionHandler = () => dispatch({ type: "INCREMENT_SESSION" });
   const decrementSessionHandler = () => dispatch({ type: "DECREMENT_SESSION" });
   const incrementBreakHandler = () => dispatch({ type: "INCREMENT_BREAK" });
   const decrementBreakHandler = () => dispatch({ type: "DECREMENT_BREAK" });
-  const toggleStartStopHandler = () => dispatch({ type: "INIT_SESSION" });
-
-  const timeLeft = timerStr(state.sessionTimer);
+  const toggleStartStopHandler = () => dispatch({ type: "START_STOP" });
 
   return (
     <div className="container">
       <div id="timer">
-        <div id="timer-label"> Session / Break </div>
-        <div id="time-left">{timeLeft}</div>
+        <div id="timer-label"> {!state.breakOn ? "Session" : "Break"}</div>
+        <div id="time-left"> {state.timeLeft} </div>
       </div>
 
       <div id="session" className="box">
@@ -149,7 +192,7 @@ const Clock = () => {
       <div className="init_btns">
         <button id="star_stop" onClick={toggleStartStopHandler}>
           {" "}
-          {state.start ? "Stop" : "Start"}{" "}
+          {state.sessionOn ? "Stop" : "Start"}{" "}
         </button>
         <button id="reset" onClick={resetHandler}>
           {" "}
