@@ -1,11 +1,11 @@
 import ReactDOM from "https://cdn.skypack.dev/react-dom";
-import { useEffect, useReducer, useState } from "https://cdn.skypack.dev/react";
+import { useEffect, useReducer, useRef } from "https://cdn.skypack.dev/react";
 
 const defaultState = {
   running: false,
   sessionDefault: 25,
   breakDefault: 5,
-  title: "session",
+  title: "Session",
   timeLeft: { min: 25, sec: 0 },
 };
 
@@ -21,7 +21,6 @@ const clockReducer = (state, action) => {
   switch (action.type) {
     case "RESET":
       return defaultState;
-
     case "INCREMENT_SESSION":
       if (state.sessionDefault === 60 || state.running) return state;
       return {
@@ -29,7 +28,6 @@ const clockReducer = (state, action) => {
         sessionDefault: state.sessionDefault + 1,
         timeLeft: { min: state.sessionDefault + 1, sec: 0 },
       };
-
     case "DECREMENT_SESSION":
       if (state.sessionDefault === 1 || state.running) return state;
       return {
@@ -37,41 +35,38 @@ const clockReducer = (state, action) => {
         sessionDefault: state.sessionDefault - 1,
         timeLeft: { min: state.sessionDefault - 1, sec: 0 },
       };
-
     case "INCREMENT_BREAK":
       if (state.breakDefault === 60 || state.running) return state;
       return { ...state, breakDefault: state.breakDefault + 1 };
-
     case "DECREMENT_BREAK":
       if (state.breakDefault === 1 || state.running) return state;
       return { ...state, breakDefault: state.breakDefault - 1 };
-
     case "INIT_CLOCK":
       let m = state.timeLeft.min;
       let s = state.timeLeft.sec;
-
       if (s > 0) return { ...state, timeLeft: { min: m, sec: s - 1 } };
       if (s === 0 && m > 0)
         return { ...state, timeLeft: { min: m - 1, sec: 59 } };
-
       if (s === 0 && m === 0) {
-        if (state.title === "session")
+        if (state.title === "Session") {
           return {
             ...state,
-            title: "break",
+            title: "Break",
             timeLeft: { min: state.breakDefault, sec: 0 },
           };
-
-        if (state.title === "break")
+        }
+        if (state.title === "Break") {
           return {
             ...state,
-            title: "session",
+            title: "Session",
             timeLeft: { min: state.sessionDefault, sec: 0 },
           };
+        }
       }
-
     case "START_STOP":
       return { ...state, running: !state.running };
+    case "AUDIO":
+      return audioRef.current.play();
 
     default:
       throw new Error("Something went wrong");
@@ -80,20 +75,24 @@ const clockReducer = (state, action) => {
 
 const Clock = () => {
   const [state, dispatch] = useReducer(clockReducer, defaultState);
+  const audioRef = useRef(null);
 
   useEffect(() => {
     let interval;
 
-    if (state.running) {
-      interval = setInterval(() => {
-        dispatch({ type: "INIT_CLOCK" });
-      }, 1000);
-    }
+    if (state.running)
+      interval = setInterval(() => dispatch({ type: "INIT_CLOCK" }), 10);
+
+    if (state.timeLeft.min === 0 && state.timeLeft.sec === 0)
+      interval = setInterval(() => audioRef.current.play(), 2000);
 
     return () => clearInterval(interval);
   }, [state.running]);
 
-  const resetHandler = () => dispatch({ type: "RESET" });
+  const resetHandler = () => {
+    audioRef.current.load();
+    return dispatch({ type: "RESET" });
+  };
   const incrementSessionHandler = () => dispatch({ type: "INCREMENT_SESSION" });
   const decrementSessionHandler = () => dispatch({ type: "DECREMENT_SESSION" });
   const incrementBreakHandler = () => dispatch({ type: "INCREMENT_BREAK" });
@@ -102,6 +101,12 @@ const Clock = () => {
 
   return (
     <div className="container">
+      <audio
+        id="beep"
+        ref={audioRef}
+        src="https://raw.githubusercontent.com/freeCodeCamp/cdn/master/build/testable-projects-fcc/audio/BeepSound.wav"
+      />
+
       <div id="timer">
         <div id="timer-label"> {state.title}</div>
         <div id="time-left"> {timerStr(state.timeLeft)} </div>
@@ -164,7 +169,7 @@ const Clock = () => {
       <div className="init_btns">
         <button id="start_stop" onClick={toggleStartStopHandler}>
           {" "}
-          {state.sessionOn ? "Stop" : "Start"}{" "}
+          {state.running ? "Stop" : "Start"}{" "}
         </button>
         <button id="reset" onClick={resetHandler}>
           {" "}
