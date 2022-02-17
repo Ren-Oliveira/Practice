@@ -1,4 +1,5 @@
-const { useState } = require("react");
+import ReactDOM from "https://cdn.skypack.dev/react-dom";
+import { useState } from "https://cdn.skypack.dev/react";
 
 const bankOne = [
   {
@@ -58,10 +59,12 @@ const bankOne = [
 ];
 
 const Drums = () => {
-  const [display, setDisplay] = useState("");
+  const [display, setDisplay] = useState("x");
+
   const keys = ["Q", "W", "E", "A", "S", "D", "Z", "X", "C"];
 
   const keyPressHandler = (e) => {
+    console.log(e.key);
     for (let key of bankOne) {
       if (e.keyCode === key.keyTrigger) {
         setDisplay(key.id);
@@ -69,21 +72,20 @@ const Drums = () => {
     }
   };
 
+  const btns = keys.map((key) => {
+    return (
+      <button id={key} className="drum-pad" onKeyPress={keyPressHandler}>
+        {" "}
+        {key}{" "}
+      </button>
+    );
+  });
+
   return (
     <div id="drum-machine">
       <div id="container">
         <div id="left-side">
-          <div id="drum-pad">
-            {keys.map((key) => (
-              <button
-                id={key}
-                className="drum-pad"
-                onKeyPress={keyPressHandler}
-              >
-                {key}
-              </button>
-            ))}
-          </div>
+          <div id="drum-pad">{btns}</div>
         </div>
 
         <div id="right-side">
