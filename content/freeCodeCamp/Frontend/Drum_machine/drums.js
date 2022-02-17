@@ -1,3 +1,5 @@
+const { useState } = require("react");
+
 const bankOne = [
   {
     keyCode: 81,
@@ -56,7 +58,16 @@ const bankOne = [
 ];
 
 const Drums = () => {
+  const [display, setDisplay] = useState("");
   const keys = ["Q", "W", "E", "A", "S", "D", "Z", "X", "C"];
+
+  const keyPressHandler = (e) => {
+    for (let key of bankOne) {
+      if (e.keyCode === key.keyTrigger) {
+        setDisplay(key.id);
+      }
+    }
+  };
 
   return (
     <div id="drum-machine">
@@ -64,7 +75,11 @@ const Drums = () => {
         <div id="left-side">
           <div id="drum-pad">
             {keys.map((key) => (
-              <button id={key} className="drum-pad">
+              <button
+                id={key}
+                className="drum-pad"
+                onKeyPress={keyPressHandler}
+              >
                 {key}
               </button>
             ))}
@@ -72,7 +87,7 @@ const Drums = () => {
         </div>
 
         <div id="right-side">
-          <div id="display"> name </div>
+          <div id="display"> {display} </div>
         </div>
       </div>
     </div>
