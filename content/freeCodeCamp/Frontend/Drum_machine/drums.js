@@ -43,20 +43,18 @@ const notesList = {
 const Pad = (props) => {
   return (
     <button
-      type="button"
-      id={`btn-${props.noteKey}`}
+      id={`btn${props.noteKey}`}
       className="drum-pad"
       onClick={props.playAudio}
     >
       {props.noteKey}
-
       <audio id={props.noteKey} className="clip" src={props.src} />
     </button>
   );
 };
 
 const Drums = () => {
-  const [display, setDisplay] = useState("x");
+  const [display, setDisplay] = useState("----");
 
   useEffect(() => {
     window.addEventListener("keydown", playNote);
@@ -67,14 +65,11 @@ const Drums = () => {
 
   const playNote = (e) => {
     const keyPressed = e.key ? e.key.toUpperCase() : e.target.childNodes[1].id;
-    console.log(keyPressed);
     if (e.key && !allKeys.includes(keyPressed)) return;
     setDisplay(notesList[keyPressed].id);
-    const audio = document.getElementById(keyPressed);
-    audio.play();
+    const drumNote = document.getElementById(keyPressed);
+    drumNote.play();
   };
-
-  const clickHandler = () => {};
 
   const padBtns = allKeys.map((key, i) => (
     <Pad noteKey={key} src={notesList[key].url} playAudio={playNote} />
@@ -83,13 +78,8 @@ const Drums = () => {
   return (
     <div id="drum-machine">
       <div id="container">
-        <div id="left-side">
-          <div id="drum-pad">{padBtns}</div>
-        </div>
-
-        <div id="right-side">
-          <div id="display">{display}</div>
-        </div>
+        <div id="display">{display}</div>
+        <div id="drum-pad">{padBtns}</div>
       </div>
     </div>
   );
