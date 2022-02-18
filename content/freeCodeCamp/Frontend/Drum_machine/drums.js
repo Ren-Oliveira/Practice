@@ -1,72 +1,55 @@
 import ReactDOM from "https://cdn.skypack.dev/react-dom";
-import { useState } from "https://cdn.skypack.dev/react";
+import { useState, useEffect } from "https://cdn.skypack.dev/react";
 
-const notesArr = [
-  {
-    keyCode: 81,
-    keyTrigger: "Q",
+const notesList = {
+  Q: {
     id: "Heater-1",
     url: "https://s3.amazonaws.com/freecodecamp/drums/Heater-1.mp3",
   },
-  {
-    keyCode: 87,
-    keyTrigger: "W",
+  W: {
     id: "Heater-2",
     url: "https://s3.amazonaws.com/freecodecamp/drums/Heater-2.mp3",
   },
-  {
-    keyCode: 69,
-    keyTrigger: "E",
+  E: {
     id: "Heater-3",
     url: "https://s3.amazonaws.com/freecodecamp/drums/Heater-3.mp3",
   },
-  {
-    keyCode: 65,
-    keyTrigger: "A",
+  A: {
     id: "Heater-4",
     url: "https://s3.amazonaws.com/freecodecamp/drums/Heater-4_1.mp3",
   },
-  {
-    keyCode: 83,
-    keyTrigger: "S",
+  S: {
     id: "Clap",
     url: "https://s3.amazonaws.com/freecodecamp/drums/Heater-6.mp3",
   },
-  {
-    keyCode: 68,
-    keyTrigger: "D",
+  D: {
     id: "Open-HH",
     url: "https://s3.amazonaws.com/freecodecamp/drums/Dsc_Oh.mp3",
   },
-  {
-    keyCode: 90,
-    keyTrigger: "Z",
+  Z: {
     id: "Kick-n'-Hat",
     url: "https://s3.amazonaws.com/freecodecamp/drums/Kick_n_Hat.mp3",
   },
-  {
-    keyCode: 88,
-    keyTrigger: "X",
+  X: {
     id: "Kick",
     url: "https://s3.amazonaws.com/freecodecamp/drums/RP4_KICK_1.mp3",
   },
-  {
-    keyCode: 67,
-    keyTrigger: "C",
+  C: {
     id: "Closed-HH",
     url: "https://s3.amazonaws.com/freecodecamp/drums/Cev_H2.mp3",
   },
-];
+};
 
 const Pad = (props) => {
   return (
     <button
+      type="button"
       id={`btn-${props.noteKey}`}
       className="drum-pad"
-      onKeyPress={props.keyPress}
-      value={props.display}
+      onClick={props.playAudio}
     >
       {props.noteKey}
+
       <audio id={props.noteKey} className="clip" src={props.src} />
     </button>
   );
@@ -75,25 +58,26 @@ const Pad = (props) => {
 const Drums = () => {
   const [display, setDisplay] = useState("x");
 
-  const keyPressHandler = (e) => {
-    // console.log(e.target);
-    for (let key of notesArr) {
-      if (e.key.toUpperCase() === key.keyTrigger) {
-        setDisplay(key.id);
+  useEffect(() => {
+    window.addEventListener("keydown", playNote);
+    return () => window.removeEventListener("keydown", playNote);
+  }, []);
 
-        const audioToPlay = new Audio(e.target);
-        audioToPlay.play();
-      }
-    }
+  const allKeys = ["Q", "W", "E", "A", "S", "D", "Z", "X", "C"];
+
+  const playNote = (e) => {
+    const keyPressed = e.key ? e.key.toUpperCase() : e.target.childNodes[1].id;
+    console.log(keyPressed);
+    if (e.key && !allKeys.includes(keyPressed)) return;
+    setDisplay(notesList[keyPressed].id);
+    const audio = document.getElementById(keyPressed);
+    audio.play();
   };
 
-  const padBtns = notesArr.map((note) => (
-    <Pad
-      noteKey={note["keyTrigger"]}
-      src={note["url"]}
-      value={note["id"]}
-      keyPress={keyPressHandler}
-    />
+  const clickHandler = () => {};
+
+  const padBtns = allKeys.map((key, i) => (
+    <Pad noteKey={key} src={notesList[key].url} playAudio={playNote} />
   ));
 
   return (
@@ -104,7 +88,7 @@ const Drums = () => {
         </div>
 
         <div id="right-side">
-          <div id="display"> {display} </div>
+          <div id="display">{display}</div>
         </div>
       </div>
     </div>
