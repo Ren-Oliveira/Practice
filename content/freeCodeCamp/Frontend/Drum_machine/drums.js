@@ -1,7 +1,7 @@
 import ReactDOM from "https://cdn.skypack.dev/react-dom";
 import { useState } from "https://cdn.skypack.dev/react";
 
-const bankOne = [
+const notesArr = [
   {
     keyCode: 81,
     keyTrigger: "Q",
@@ -58,38 +58,44 @@ const bankOne = [
   },
 ];
 
+const Pad = (props) => {
+  return(
+    <button id={`btn-${props.noteKey}`} className="drum-pad" onKeyPress={props.keyPress} value={props.display}>
+    {props.noteKey}
+      <audio id={props.noteKey} className="clip" src={props.url}/>
+    </button>
+
+  )
+};
+
 const Drums = () => {
   const [display, setDisplay] = useState("x");
-
+  
   const keys = ["Q", "W", "E", "A", "S", "D", "Z", "X", "C"];
 
   const keyPressHandler = (e) => {
-    console.log(e.key);
-    for (let key of bankOne) {
-      if (e.keyCode === key.keyTrigger) {
-        setDisplay(key.id);
-      }
-    }
+    console.log(e.current);
+    
+    // for (let key of bankOne) {
+    //   if (e.keyCode === key.keyTrigger) {
+    //     setDisplay(key.id);
+    //   }
+    // }
   };
 
-  const btns = keys.map((key) => {
-    return (
-      <button id={key} className="drum-pad" onKeyPress={keyPressHandler}>
-        {" "}
-        {key}{" "}
-      </button>
-    );
-  });
-
+  const padBtns = notesArr.map(note => <Pad noteKey={note["keyTrigger"]} src={note["url"]} value={note["id"]} keyPress={keyPressHandler}/>);
+  
   return (
     <div id="drum-machine">
       <div id="container">
         <div id="left-side">
-          <div id="drum-pad">{btns}</div>
+          <div id="drum-pad">
+            { padBtns }
+          </div>
         </div>
 
         <div id="right-side">
-          <div id="display"> {display} </div>
+          <div id="display"> { display } </div>
         </div>
       </div>
     </div>
