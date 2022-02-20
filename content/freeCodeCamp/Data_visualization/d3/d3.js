@@ -7,4 +7,9 @@ d3.select("body")
   .data(dataset)
   .enter()
   .append("h2")
-  .text("New Title");
+  .text((n) => `${n} €`)
+  .style("font-family", "verdana")
+  .style("color", (n) => {
+    if (n < 20) return "darkred";
+    return "darkgreen";
+  });
