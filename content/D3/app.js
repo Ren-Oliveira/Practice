@@ -13,13 +13,13 @@ const submitHandler = (e) => {
   dataSet.push(inputNum.value);
   inputNum.value = null;
   display.innerHTML = dataSet.join(" ");
+
+  d3.select("#foo")
+    .data(dataSet)
+    .enter()
+    .append("p")
+    .attr("margin", 20)
+    .text((d) => ` ${d}€`);
 };
 
 submitBtn.addEventListener("click", submitHandler);
-
-// d3.select("div")
-//   .select("#foo")
-//   .data([1, 2, 3])
-//   .enter()
-//   .append("h2")
-//   .text((d) => `${d}€`);
