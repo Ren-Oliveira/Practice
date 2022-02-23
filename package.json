@@ -1,0 +1,28 @@
+{
+  "dependencies": {
+    "react": "^17.0.2",
+    "redux": "^4.1.2"
+  },
+  "name": "practice",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {
+    "node-sass": "^7.0.1",
+    "sass": "^1.49.7"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ren-Oliveira/Practice.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ren-Oliveira/Practice/issues"
+  },
+  "homepage": "https://github.com/Ren-Oliveira/Practice#readme",
+  "description": ""
+}
