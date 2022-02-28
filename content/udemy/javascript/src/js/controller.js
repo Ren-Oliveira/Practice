@@ -1,3 +1,5 @@
+import * as model from './model';
+
 import icons from '../img/icons.svg';
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
@@ -31,8 +33,6 @@ const renderSpinner = function (parentEl) {
   parentEl.insertAdjacentHTML('afterbegin', markup);
 };
 
-
-
 const showRecipe = async function () {
   try {
     const id = window.location.hash.slice(1);
@@ -40,27 +40,8 @@ const showRecipe = async function () {
 
     renderSpinner(recipeContainer);
 
-    const res = await fetch(
-      `https://forkify-api.herokuapp.com/api/v2/recipes/${id}`
-    );
-
-    const data = await res.json();
-    if (!res.ok) throw new Error(`${data.message} (${res.status})`);
-
-    let { recipe } = data.data;
-
-    recipe = {
-      id: recipe.id,
-      title: recipe.title,
-      publisher: recipe.publisher,
-      sourceUrl: recipe.source_url,
-      image: recipe.image_url,
-      servings: recipe.servings,
-      cookingTime: recipe.cooking_time,
-      ingredients: recipe.ingredients,
-    };
-
-    //rendering recipe
+    await model.loadRecipe(id);
+    const { recipe } = model.state;
 
     const markup = `
   <figure class="recipe__fig">
@@ -69,7 +50,6 @@ const showRecipe = async function () {
       <span>${recipe.title}</span>
     </h1>
   </figure>
-
   <div class="recipe__details">
     <div class="recipe__info">
       <svg class="recipe__info-icon">
@@ -88,7 +68,6 @@ const showRecipe = async function () {
         recipe.servings
       }</span>
       <span class="recipe__info-text">servings</span>
-
       <div class="recipe__info-buttons">
         <button class="btn--tiny btn--increase-servings">
           <svg>
@@ -102,7 +81,6 @@ const showRecipe = async function () {
         </button>
       </div>
     </div>
-
     <div class="recipe__user-generated">
       <svg>
         <use href="${icons}#icon-user"></use>
