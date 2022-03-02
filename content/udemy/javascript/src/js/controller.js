@@ -7,9 +7,9 @@ import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import { async } from 'regenerator-runtime';
 
-if (module.hot) {
-  module.hot.accept();
-}
+// if (module.hot) {
+//   module.hot.accept();
+// }
 
 const controlRecipes = async function () {
   try {
@@ -40,12 +40,12 @@ const controlSearchResults = async function () {
     await model.loadSearchResults(query);
 
     /// render results
-    resultsView.render(model.state.search.results);
+    resultsView.render(model.getSearchResultsPage());
   } catch (err) {
     console.log(err);
   }
 };
-controlSearchResults();
+// controlSearchResults();
 
 const init = function () {
   recipeView.addHandlerRender(controlRecipes);
