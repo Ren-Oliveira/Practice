@@ -2926,7 +2926,7 @@ class ResultsView extends _viewDefault.default {
     _errorMessage = 'No recipes found for your query! Please try again.';
     _message = '';
     _generateMarkup() {
-        return this._data.map((result)=>previewView.render(result, false)
+        return this._data.map((result)=>_previewViewDefault.default.render(result, false)
         ).join('');
     }
 }
