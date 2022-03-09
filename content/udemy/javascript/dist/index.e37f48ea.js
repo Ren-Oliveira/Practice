@@ -591,8 +591,13 @@ const controlAddBookmark = function() {
 const controlBookmarks = function() {
     _bookmarksViewDefault.default.render(_model.state.bookmarks);
 };
-const controlAddRecipe = function(newRecipe) {
-    console.log(newRecipe);
+const controlAddRecipe = async function(newRecipe) {
+    try {
+        await _model.uploadRecipe(newRecipe);
+    } catch (err) {
+        console.log(err);
+        _addRecipeViewDefault.default.renderError(err.message);
+    }
 };
 const init = function() {
     _bookmarksViewDefault.default.addHandlerRender(controlBookmarks);
@@ -2293,6 +2298,8 @@ parcelHelpers.export(exports, "addBookmark", ()=>addBookmark
 );
 parcelHelpers.export(exports, "deleteBookmark", ()=>deleteBookmark
 );
+parcelHelpers.export(exports, "uploadRecipe", ()=>uploadRecipe
+);
 var _regeneratorRuntime = require("regenerator-runtime");
 var _config = require("./config");
 var _helpers = require("./helpers");
@@ -2380,7 +2387,21 @@ const init = function() {
 init();
 const clearBookmarks = function() {
     localStorage.clear('bookmarks');
-}; // clearBookmarks();
+};
+const uploadRecipe = async function(newRecipe) {
+    const ingredients = Object.entries(newRecipe).filter((entry)=>entry[0].startsWith('ingredient') && entry[1] !== ''
+    ).map((ing)=>{
+        const ingArr = ing[1].replaceAll(' ', '').split(',');
+        if (ingArr.length !== 3) throw new Error('Wrong ingredient format');
+        const [quantity, unit, description] = ingArr;
+        return {
+            quantity: quantity ? +quantity : null,
+            unit,
+            description
+        };
+    });
+    console.log(ingredients);
+};
 
 },{"regenerator-runtime":"dXNgZ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./config":"k5Hzs","./helpers":"hGI1E"}],"k5Hzs":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
