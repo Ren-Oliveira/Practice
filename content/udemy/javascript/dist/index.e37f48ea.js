@@ -2437,7 +2437,7 @@ const uploadRecipe = async function(newRecipe) {
     } catch (err) {
         throw err;
     }
-};
+}; //
 
 },{"regenerator-runtime":"dXNgZ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./config":"k5Hzs","./helpers":"hGI1E"}],"k5Hzs":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
